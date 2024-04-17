@@ -46,6 +46,9 @@ public class DatabaseFrame extends JFrame{
     JButton deleteKey;
     JButton clearKey;
     
+    JButton students;
+    JButton courses;
+    
     JTextField searchField;
     JLabel searchDescription;
     
@@ -60,6 +63,17 @@ public class DatabaseFrame extends JFrame{
         this.setResizable(false);
         this.setSize(frameWidth+20,frameHeight-50);
         this.setLocationRelativeTo(this);
+    
+    /*Adding main buttons*/
+        students = new JButton("STUDENTS");
+        courses = new JButton("COURSES");
+        this.add(students);
+        this.add(courses);
+        students.setBounds(380, 20, 100,30);
+        courses.setBounds(760, 20, 100,30);
+        courses.setEnabled(false);
+        students.setEnabled(false);
+        
         
     /*Panel for the Title*/
         titlePanel = new JPanel();
@@ -70,19 +84,19 @@ public class DatabaseFrame extends JFrame{
         //Title Labels
         if(type == 1){
             title = new JLabel("COURSE DATABASE");
-            this.setSize(1200, 550); //sets different frame dimensions for course database
             searchDescription = new JLabel("(Search Course ID or Name)");
             this.add(searchDescription);
-            searchDescription.setBounds(560,(frameHeight/10)+(frameHeight/2)+107-65, 200, 10);
-            searchDescription.setFont(new Font("Arial", Font.PLAIN, 12));
+            students.setEnabled(true);
         }
         if(type == 0){
             title = new JLabel("STUDENT DATABASE");
             searchDescription = new JLabel("(Search Student Name, Gender, ID, Year, Course Name)");
             this.add(searchDescription);
-            searchDescription.setBounds(468,(frameHeight/10)+(frameHeight/2)+107-65, 350, 10);
-            searchDescription.setFont(new Font("Arial", Font.PLAIN, 12));
+            courses.setEnabled(true);
         }
+        
+        searchDescription.setBounds(468,(frameHeight/10)+(frameHeight/2)+107-65, 350, 10);
+        searchDescription.setFont(new Font("Arial", Font.PLAIN, 12));
         
         titlePanel.add(title);
         title.setFont(new java.awt.Font("Unispace", 1, 24));
@@ -115,6 +129,7 @@ public class DatabaseFrame extends JFrame{
         deleteKey.setBounds(250, 10, 120,50);
         clearKey.setBounds(375, 10, 120,50);
         
+        
     /*Searching*/
         searchField = new JTextField();
         JLabel searchLabel = new JLabel("Search:");
@@ -145,6 +160,13 @@ public class DatabaseFrame extends JFrame{
             });
         }
         this.setVisible(true);
+    }
+    //adding main button listeners
+    public void addStudentsListener(ActionListener studentsListener){
+        students.addActionListener(studentsListener);
+    }
+    public void addCoursesListener(ActionListener coursesListener){
+        courses.addActionListener(coursesListener);
     }
     
     // adding component listeners
@@ -182,11 +204,7 @@ public class DatabaseFrame extends JFrame{
         sorter = new TableRowSorter<>(tableModel);
         table.setRowSorter(sorter);
         tablePanel.add(new JScrollPane(table));
-        if(type == 1){ //adjusts table position for course data table
-            tablePanel.getComponent(0).setBounds(0,0, frameWidth-71, frameHeight/2);
-        }else{
-            tablePanel.getComponent(0).setBounds(0,0, frameWidth-3, frameHeight/2); //default value for student data table
-        }
+        tablePanel.getComponent(0).setBounds(0,0, frameWidth-3, frameHeight/2); //default value for student data table
     }
     
     /*
