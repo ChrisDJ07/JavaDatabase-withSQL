@@ -115,12 +115,12 @@ public class DatabaseController {
         public coursesListener(DatabaseFrame studentDB, DatabaseFrame coursesDB) {
             this.studentDB = studentDB;
             this.coursesDB = coursesDB;
-            changeType(1);
         }
         @Override
         public void actionPerformed(ActionEvent e) {
             coursesDB.setVisible(true);
             studentDB.setVisible(false);
+            changeType(1);
         }
     }
 
@@ -131,13 +131,13 @@ public class DatabaseController {
         public studentsListener(DatabaseFrame studentDB, DatabaseFrame coursesDB) {
             this.studentDB = studentDB;
             this.coursesDB = coursesDB;
-            changeType(0);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             studentDB.setVisible(true);
             coursesDB.setVisible(false);
+            changeType(0);
         }
     }
     
