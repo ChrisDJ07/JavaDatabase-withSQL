@@ -1,7 +1,6 @@
 
 package model;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -14,8 +13,6 @@ import java.util.ArrayList;
  * @author Christian Dave Janiola
  */
 public class DatabaseModel {
-     private File studentFile;   //file for the studentDB.csv
-     private File courseFile;    //file for the courseDB.csv
      
      public ArrayList<String> studentList = new ArrayList<>(); //List of Students for Table
      public ArrayList<String> courseCodeList = new ArrayList<>();   //List of Course Code for matching
@@ -27,8 +24,7 @@ public class DatabaseModel {
     
     /*Class Constructor, init file objects with student and course data files*/
     public DatabaseModel(){
-        studentFile = new File("src/studentDB.csv");
-        courseFile = new File("src/courseDB.csv");
+        //...
     }
     
     /*Save Students/Courses Data into dedicated files*/
