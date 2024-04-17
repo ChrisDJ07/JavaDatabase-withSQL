@@ -92,15 +92,15 @@ public class InputFrame extends JFrame{
             inputField.add(submitButton);
             submitButton.setBounds(X+60,Y*6, 100,40);
             
-            JLabel necessary1 = new JLabel("(Necessary)");
-            JLabel necessary2 = new JLabel("(Necessary)");
-            JLabel necessary3 = new JLabel("(Necessary)");
-            inputField.add(necessary1);necessary1.setFont(new Font("Arial", Font.PLAIN, 12));
-            inputField.add(necessary2);necessary2.setFont(new Font("Arial", Font.PLAIN, 12));
-            inputField.add(necessary3);necessary3.setFont(new Font("Arial", Font.PLAIN, 12));
-            necessary1.setBounds(205,95,75,15);
-            necessary2.setBounds(205,155,75,15);
-            necessary3.setBounds(205-15,335,75,15);
+            JLabel required1 = new JLabel("(Required)");
+            JLabel required2 = new JLabel("(Required)");
+            JLabel required3 = new JLabel("(Required)");
+            inputField.add(required1);required1.setFont(new Font("Arial", Font.PLAIN, 12));
+            inputField.add(required2);required2.setFont(new Font("Arial", Font.PLAIN, 12));
+            inputField.add(required3);required3.setFont(new Font("Arial", Font.PLAIN, 12));
+            required1.setBounds(205,95,75,15);
+            required2.setBounds(205,155,75,15);
+            required3.setBounds(205-15,335,75,15);
             
         }
         
@@ -120,12 +120,12 @@ public class InputFrame extends JFrame{
             this.add(submitButton);
             submitButton.setBounds(X+70,Y*3-30, 100,40);
             
-            JLabel necessary1 = new JLabel("(Necessary)");
-            JLabel necessary2 = new JLabel("(Necessary)");
-            this.add(necessary1);necessary1.setFont(new Font("Arial", Font.PLAIN, 12));
-            this.add(necessary2);necessary2.setFont(new Font("Arial", Font.PLAIN, 12));
-            necessary1.setBounds(200,72,75,15);
-            necessary2.setBounds(200,131,75,15);
+            JLabel required1 = new JLabel("(Required)");
+            JLabel required2 = new JLabel("(Required)");
+            this.add(required1);required1.setFont(new Font("Arial", Font.PLAIN, 12));
+            this.add(required2);required2.setFont(new Font("Arial", Font.PLAIN, 12));
+            required1.setBounds(200,72,75,15);
+            required2.setBounds(200,131,75,15);
         }
         this.setVisible(true);
     }

@@ -120,7 +120,7 @@ public class DatabaseController {
                     //check if name, id, and course is filled
                     if(input.getNameText().replace(" ", "").isEmpty() || input.getIdText().replace(" ", "").isEmpty()
                              || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0]))== "None"){
-                        JOptionPane.showMessageDialog( null, "Missing necessary fields.");
+                        JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
                     } //check for duplicates in name and id
                     else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText(), 0, "add")){
@@ -130,7 +130,7 @@ public class DatabaseController {
                     else{
                         modelDB.createNewStudent(input.getNameText(), input.getGenderType(),input.getIdText(),
                                                  input.getYearText(), input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])));
-                        modelDB.saveData(0); //save new student data to dedicated csv file
+                        modelDB.saveData(0); //save new student data to database
                         refresh(); //calls refresh function
                         //stores new student data to string variable to add to table
                         String[] newStudentData = {input.getNameText(), input.getGenderType(),input.getIdText(),
@@ -143,7 +143,7 @@ public class DatabaseController {
                     //check if name, id, and course is filled
                     if(input.getNameText().replace(" ", "").isEmpty() || input.getIdText().replace(" ", "").isEmpty()
                              || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])) == "None"){
-                        JOptionPane.showMessageDialog( null, "Missing necessary fields.");
+                        JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
                     } // check for duplicates for name and id
                     else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText(), 0, "edit")){
@@ -167,7 +167,7 @@ public class DatabaseController {
                 if(actionType.equals("Add")){
                     //check if the course code and name fields are filled
                     if(input.getCourseNameField().replace(" ", "").isEmpty() || input.getCourseField().replace(" ", "").isEmpty()){
-                        JOptionPane.showMessageDialog( null, "Missing necessary fields.");
+                        JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
                     } //check for duplicates in code and name
                     else if(modelDB.checkDuplicate(selectedIndex, input.getCourseNameField(),input.getCourseField(), 1, "add")){
@@ -176,7 +176,7 @@ public class DatabaseController {
                     }
                     else{
                         modelDB.createNewCourse(input.getCourseField(), input.getCourseNameField());
-                        modelDB.saveData(1);//save new course data to dedicated csv file
+                        modelDB.saveData(1);//save new course data to database
                         //stores new student data to string variable to add to table
                         String[] newCourseData = {input.getCourseField(), input.getCourseNameField()};
                         courseDB.tableModel.addRow(newCourseData);//add new row for new course data
@@ -187,7 +187,7 @@ public class DatabaseController {
                 if(actionType.equals("Edit")){
                     //check if the course code and name fields are filled
                     if(input.getCourseNameField().replace(" ", "").isEmpty() || input.getCourseField().replace(" ", "").isEmpty()){
-                        JOptionPane.showMessageDialog( null, "Missing necessary fields.");
+                        JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
                     } //check for duplicates in code and name
                     else if(modelDB.checkDuplicate(selectedIndex, input.getCourseNameField(),input.getCourseField(), 1, "edit")){
@@ -208,7 +208,7 @@ public class DatabaseController {
                                 String choice = courseDB.codeChanged();
                                 if(choice == "yes"){//calls the codeChanged method confirming if student data should be changed or not, or cancel operation
                                     modelDB.courseUpdate(modelDB.courseObjects.get(selectedIndex), courseData);//updates course codes of affected students
-                                    modelDB.saveData(0); //save data to csv file    
+                                    modelDB.saveData(0); //save data to database    
                                 }
                                 else if(choice == "cancel"){ //check if not "yes" or "no"
                                     return;
@@ -216,7 +216,7 @@ public class DatabaseController {
 
                             }
                             modelDB.setData(selectedIndex, courseData, 1); //updates course data
-                            modelDB.saveData(1); //save to csv file
+                            modelDB.saveData(1); //save to database
                             /*updates table*/
                             courseDB.tableModel.removeRow(selectedIndex);
                             courseDB.tableModel.insertRow(selectedIndex, courseData);
@@ -246,7 +246,7 @@ public class DatabaseController {
                                 "Are you sure you want to delete this student from the database? This operation is permanent.",
                                 "Student Delete alert", 2 )== JOptionPane.YES_OPTION){
                     modelDB.delete(selectedIndex, 0); //delete student object from arraylist
-                    modelDB.saveData(0); //save data to dedicated csv file
+                    modelDB.saveData(0); //save data to database
                     refresh(); //performs database refresh
                     studentDB.tableModel.removeRow(selectedIndex); //update table
                     selectStudent.dispose();
@@ -273,7 +273,7 @@ public class DatabaseController {
                                 "Deleting This Course will affect all Students enrolled in this course, proceed?",
                                 "Course Delete alert", 2 )== JOptionPane.YES_OPTION){
                     modelDB.delete(selectedIndex, 1); //delete course object from arraylist
-                    modelDB.saveData(1); //save data to dedicated csv file
+                    modelDB.saveData(1); //save data to database
                     courseDB.tableModel.removeRow(selectedIndex); //update table
                     courseDataChange(); //update student data
                     selectCourse.dispose();
