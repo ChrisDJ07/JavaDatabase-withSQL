@@ -41,13 +41,14 @@ public class InputFrame extends JFrame{
     
     JTextField nameField = new JTextField();
     JTextField idField = new JTextField();
-    JTextField yearLevelField = new JTextField();
     JTextField courseCodeField = new JTextField();
     JTextField courseNameField = new JTextField();
     
     
     String[] genderTypes = {"Male","Female", "Others"};
+    String[] yearLevels = {"1", "2", "3", "4"};
     JComboBox genderField = new JComboBox(genderTypes);
+    JComboBox yearLevelField = new JComboBox(yearLevels);
     
     JComboBox courseCodeBox;
     
@@ -141,7 +142,7 @@ public class InputFrame extends JFrame{
         genderField.setSelectedItem(gender);
     }
     public void setYearText(String year){
-        yearLevelField.setText(year);
+        yearLevelField.setSelectedItem(year);
     }
     public void setCourseText(String course){
         if(course.equals("None")){
@@ -176,7 +177,7 @@ public class InputFrame extends JFrame{
         return genderTypes[genderField.getSelectedIndex()];
     }
     public String getYearText(){
-        return yearLevelField.getText();
+        return yearLevels[yearLevelField.getSelectedIndex()];
     }
     public String getCourseCode(String[] courseCodeList){
         if(courseCodeBox.getSelectedIndex() == -1){
