@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.util.Comparator;
 import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -58,12 +59,12 @@ public class DatabaseFrame extends JFrame{
     public DatabaseFrame(String name, int type){
         super(name);
 
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
         this.setResizable(false);
         this.setSize(frameWidth+20,frameHeight-50);
         this.setLocationRelativeTo(this);
-    
+        
     /*Adding main buttons*/
         students = new JButton("STUDENTS");
         courses = new JButton("COURSES");
@@ -202,6 +203,7 @@ public class DatabaseFrame extends JFrame{
         table.setAutoCreateRowSorter(true);
         
         sorter = new TableRowSorter<>(tableModel);
+        sorter.toggleSortOrder(0);
         table.setRowSorter(sorter);
         tablePanel.add(new JScrollPane(table));
         tablePanel.getComponent(0).setBounds(0,0, frameWidth-3, frameHeight/2); //default value for student data table

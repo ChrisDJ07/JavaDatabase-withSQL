@@ -47,8 +47,10 @@ public class InputFrame extends JFrame{
     
     String[] genderTypes = {"Male","Female", "Others"};
     String[] yearLevels = {"1", "2", "3", "4"};
+    String[] years = {"2016","2017","2018","2019","2020","2021","2022","2023","2024"};
     JComboBox genderField = new JComboBox(genderTypes);
     JComboBox yearLevelField = new JComboBox(yearLevels);
+    JComboBox courseYears = new JComboBox(years);
     
     JComboBox courseCodeBox;
     
@@ -79,16 +81,22 @@ public class InputFrame extends JFrame{
             id.setBounds(X,Y*2, 100,30);
             yearLevel.setBounds(X,Y*3, 100,30);
             gender.setBounds(X,Y*4, 100,30);
-            course.setBounds(X,Y*5, 100,30);
+            course.setBounds(X,Y*5, 50,30);
 
             inputField.add(nameField);
             inputField.add(idField);
             inputField.add(genderField);
             inputField.add(yearLevelField);
+            inputField.add(courseYears);
             nameField.setBounds(X+90,Y, 150,30);
-            idField.setBounds(X+90,Y*2, 150,30);
+            courseYears.setBounds(X+90,Y*2, 60,30);
+            idField.setBounds(X+170,Y*2, 50,30);
             yearLevelField.setBounds(X+90,Y*3, 150,30);
             genderField.setBounds(X+90,Y*4, 150,30);
+            
+            JLabel hypen = new JLabel("-");
+            inputField.add(hypen);
+            hypen.setBounds(X+157,Y*2,15,30);
 
             inputField.add(submitButton);
             submitButton.setBounds(X+60,Y*6, 100,40);
@@ -136,7 +144,9 @@ public class InputFrame extends JFrame{
         nameField.setText(name);
     }
     public void setIdText(String id){
-        idField.setText(id);
+        String[] idComp = id.split("-");
+        courseYears.setSelectedItem(idComp[0]);
+        idField.setText(idComp[1]);
     }
     public void setGenderType(String gender){
         genderField.setSelectedItem(gender);
@@ -171,6 +181,9 @@ public class InputFrame extends JFrame{
         return nameField.getText();
     }
     public String getIdText(){
+        return years[courseYears.getSelectedIndex()]+"-"+idField.getText();
+    }
+    public String getID(){
         return idField.getText();
     }
     public String getGenderType(){

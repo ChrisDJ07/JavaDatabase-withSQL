@@ -41,8 +41,10 @@ public class DatabaseController {
         this.modelDB.extractData(0);
         if(!(this.modelDB.studentObjects.isEmpty() || this.modelDB.courseObjects.isEmpty())){
             this.modelDB.matchCourseCode();
+        }
+        if(!this.modelDB.courseObjects.isEmpty()){
             courseList = modelDB.courseCodeList.toArray(new String[0]); //converts 'courseCodeList' arraylist 
-                                                                        // into a String array stored in 'courseList'
+                                                                       // into a String array stored in 'courseList'
         }
     }
     
@@ -158,10 +160,14 @@ public class DatabaseController {
                 if(actionType.equals("Add" )){
                     //check if name, id, and course is filled
                     if(input.getNameText().replace(" ", "").isEmpty() || input.getIdText().replace(" ", "").isEmpty()
-                             || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0]))== "None"){
+                             || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0]))== "None" || input.getID().replace(" ", "").isEmpty()){
                         JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
                     } //check for duplicates in name and id
+                    else if(!modelDB.validateID(input.getID())){
+                        JOptionPane.showMessageDialog( null, "Invalid ID.");
+                        return;
+                    }
                     else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText(), 0, "add")){
                         JOptionPane.showMessageDialog(null, "Student Name or ID Number already taken.");
                         return;
@@ -181,10 +187,14 @@ public class DatabaseController {
                 if(actionType.equals("Edit")){
                     //check if name, id, and course is filled
                     if(input.getNameText().replace(" ", "").isEmpty() || input.getIdText().replace(" ", "").isEmpty()
-                             || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])) == "None"){
+                             || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])) == "None" || input.getID().replace(" ", "").isEmpty()){
                         JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
                     } // check for duplicates for name and id
+                    else if(!modelDB.validateID(input.getID())){
+                        JOptionPane.showMessageDialog( null, "Invalid ID.");
+                        return;
+                    }
                     else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText(), 0, "edit")){
                         JOptionPane.showMessageDialog(null, "Student Name or ID Number already taken.");
                         return;
