@@ -28,7 +28,8 @@ public class DatabaseController {
     
     //integer for GUI type, 0-students 1-courses
     private static int type;
-    public static String[] courseList; //list of courses by code
+    //list of courses by code
+    public static String[] courseList; 
     
     /*
     Class constructor taking DatabaseModel parameter to init model object.
@@ -43,8 +44,8 @@ public class DatabaseController {
             this.modelDB.matchCourseCode();
         }
         if(!this.modelDB.courseObjects.isEmpty()){
-            courseList = modelDB.courseCodeList.toArray(new String[0]); //converts 'courseCodeList' arraylist 
-                                                                       // into a String array stored in 'courseList'
+            //converts 'courseCodeList' arraylist, into a String array stored in 'courseList'
+            courseList = modelDB.courseCodeList.toArray(new String[0]);
         }
     }
     
@@ -145,8 +146,10 @@ public class DatabaseController {
     
     /*InputFrame ActionListener*/
     class submitListener implements ActionListener{
-        private String actionType; //either 'add' or 'edit'
-        private int selectedIndex; //int index used for retrieving student/course object
+        //either 'add' or 'edit'
+        private String actionType;
+        //int index used for retrieving student/course object
+        private int selectedIndex; 
         
         //class constructor that init values for 'actionType' and 'selectedIndex'
         public submitListener(String actionType, int selectedIndex){
@@ -163,7 +166,8 @@ public class DatabaseController {
                              || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0]))== "None" || input.getID().replace(" ", "").isEmpty()){
                         JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
-                    } //check for duplicates in name and id
+                    } 
+                    //check for duplicates in name and id
                     else if(!modelDB.validateID(input.getID())){
                         JOptionPane.showMessageDialog( null, "Invalid ID.");
                         return;
@@ -175,12 +179,15 @@ public class DatabaseController {
                     else{
                         modelDB.createNewStudent(input.getNameText(), input.getGenderType(),input.getIdText(),
                                                  input.getYearText(), input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])));
-                        modelDB.saveData(0); //save new student data to database
-                        refresh(); //calls refresh function
+                        //save new student data to database
+                        modelDB.saveData(0);
+                        //calls refresh function
+                        refresh(); 
                         //stores new student data to string variable to add to table
                         String[] newStudentData = {input.getNameText(), input.getGenderType(),input.getIdText(),
-                                                 input.getYearText(), modelDB.getCourseName(modelDB.studentList.size()-1)};
-                        studentDB.tableModel.addRow(newStudentData); //add new row for new student data
+                                                   input.getYearText(), modelDB.getCourseName(modelDB.studentList.size()-1)};
+                        //add new row for new student data
+                        studentDB.tableModel.addRow(newStudentData); 
                         input.dispose();
                     }
                 }
@@ -190,7 +197,8 @@ public class DatabaseController {
                              || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])) == "None" || input.getID().replace(" ", "").isEmpty()){
                         JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
-                    } // check for duplicates for name and id
+                    } 
+                    // check for duplicates for name and id
                     else if(!modelDB.validateID(input.getID())){
                         JOptionPane.showMessageDialog( null, "Invalid ID.");
                         return;
@@ -225,10 +233,12 @@ public class DatabaseController {
                     }
                     else{
                         modelDB.createNewCourse(input.getCourseField(), input.getCourseNameField());
-                        modelDB.saveData(1);//save new course data to database
+                        //save new course data to database
+                        modelDB.saveData(1);
                         //stores new student data to string variable to add to table
                         String[] newCourseData = {input.getCourseField(), input.getCourseNameField()};
-                        courseDB.tableModel.addRow(newCourseData);//add new row for new course data
+                        //add new row for new course data
+                        courseDB.tableModel.addRow(newCourseData);
                         courseDataChange();
                         input.dispose();
                     }
@@ -238,7 +248,8 @@ public class DatabaseController {
                     if(input.getCourseNameField().replace(" ", "").isEmpty() || input.getCourseField().replace(" ", "").isEmpty()){
                         JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
-                    } //check for duplicates in code and name
+                    } 
+                    //check for duplicates in code and name
                     else if(modelDB.checkDuplicate(selectedIndex, input.getCourseNameField(),input.getCourseField(), 1, "edit")){
                         JOptionPane.showMessageDialog(null, "Course Name or Code already taken.");
                         return;
@@ -255,17 +266,21 @@ public class DatabaseController {
                         if(previousData[0] != courseData[0] || previousData[1] != courseData[1]){ //check if anything is changed
                             if(previousData[0].equals(courseData[0])==false){ //checked if course code is changed
                                 String choice = courseDB.codeChanged();
-                                if(choice == "yes"){//calls the codeChanged method confirming if student data should be changed or not, or cancel operation
+                                //calls the codeChanged method confirming if student data should be changed or not, or cancel operation
+                                if(choice == "yes"){
                                     modelDB.courseUpdate(modelDB.courseObjects.get(selectedIndex), courseData);//updates course codes of affected students
-                                    modelDB.saveData(0); //save data to database    
+                                    //save data to database
+                                    modelDB.saveData(0);     
                                 }
-                                else if(choice == "cancel"){ //check if not "yes" or "no"
+                                //check if not "yes" or "no"
+                                else if(choice == "cancel"){ 
                                     return;
                                 }
 
                             }
                             modelDB.setData(selectedIndex, courseData, 1); //updates course data
                             modelDB.saveData(1); //save to database
+                            
                             /*updates table*/
                             courseDB.tableModel.removeRow(selectedIndex);
                             courseDB.tableModel.insertRow(selectedIndex, courseData);

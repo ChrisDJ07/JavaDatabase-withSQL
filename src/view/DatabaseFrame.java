@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.util.Comparator;
 import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -87,16 +86,18 @@ public class DatabaseFrame extends JFrame{
             title = new JLabel("COURSE DATABASE");
             searchDescription = new JLabel("(Search Course ID or Name)");
             this.add(searchDescription);
+            searchDescription.setBounds(560,(frameHeight/10)+(frameHeight/2)+107-65, 350, 10);
             students.setEnabled(true);
         }
         if(type == 0){
             title = new JLabel("STUDENT DATABASE");
             searchDescription = new JLabel("(Search Student Name, Gender, ID, Year, Course Name)");
             this.add(searchDescription);
+            searchDescription.setBounds(485,(frameHeight/10)+(frameHeight/2)+107-65, 350, 10);
             courses.setEnabled(true);
+            
         }
         
-        searchDescription.setBounds(468,(frameHeight/10)+(frameHeight/2)+107-65, 350, 10);
         searchDescription.setFont(new Font("Arial", Font.PLAIN, 12));
         
         titlePanel.add(title);
@@ -117,10 +118,10 @@ public class DatabaseFrame extends JFrame{
         buttonPanel.setBounds(360,(frameHeight/2)+110, frameWidth/2, frameHeight/10);
         
     /*Adding buttons to the interface*/
-        editKey = new JButton("EDIT Field");
-        addKey = new JButton("ADD Field");
-        deleteKey = new JButton("DELETE Field");
-        clearKey = new JButton("CLEAR List");
+        editKey = new JButton("EDIT");
+        addKey = new JButton("ADD");
+        deleteKey = new JButton("DELETE");
+        clearKey = new JButton("CLEAR");
         buttonPanel.add(editKey);
         buttonPanel.add(addKey);
         buttonPanel.add(deleteKey);
