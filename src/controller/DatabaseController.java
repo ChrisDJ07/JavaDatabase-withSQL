@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 import model.DatabaseModel;
 import view.DatabaseFrame;
 import view.InputFrame;
-import view.MainMenu;
 import view.SelectFrame;
 
 /**
@@ -28,7 +27,7 @@ public class DatabaseController {
     private SelectFrame selectCourse; //course select frame
     
     //integer for GUI type, 0-students 1-courses
-    int type;
+    private static int type;
     public static String[] courseList; //list of courses by code
     
     /*
@@ -42,48 +41,30 @@ public class DatabaseController {
         this.modelDB.extractData(0);
         if(!(this.modelDB.studentObjects.isEmpty() || this.modelDB.courseObjects.isEmpty())){
             this.modelDB.matchCourseCode();
+        }
+        if(!this.modelDB.courseObjects.isEmpty()){
             courseList = modelDB.courseCodeList.toArray(new String[0]); //converts 'courseCodeList' arraylist 
-                                                                        // into a String array stored in 'courseList'
+                                                                       // into a String array stored in 'courseList'
         }
     }
     
     /*
     Another class constructor for either student/course controller initialization.
     */
-    public DatabaseController(DatabaseFrame frameDB, int type, MainMenu main){
-        if(type == 0){ //executes this nested if code when type = 0 (Student integer type designation)
-            this.type = 0;
+    public DatabaseController(DatabaseFrame frameDB,DatabaseFrame frame2DB, int type){
+            this.type = type;
+            this.courseDB = frame2DB;
             this.studentDB = frameDB;
-            this.studentDB.addAddListener(new addListener());
-            this.studentDB.addEditListener(new editListener());
-            this.studentDB.addDeleteListener(new deleteListener());
-            this.studentDB.addClearListener(new clearListener());
-            this.studentDB.addSearchListener(new searchListener());
             
-            //populate table data if student objects isn't empty, otherwise populate table with no rows
-            if(!(modelDB.studentObjects.isEmpty())){
-                this.modelDB.populateTable(0);
-                this.studentDB.generateTable(modelDB.tableData, 0);
-            }
-            else{
-                this.studentDB.generateTable(new String[0][0], 0);
-            }
-            //enables student button in "main" when current window is closed
-            studentDB.addWindowListener(new WindowAdapter(){
-                public void windowClosing(WindowEvent e){
-                    main.students.setEnabled(true);
-                }
-            });
-        }
-        
-        if(type == 1){ //executes this nested if code when type = 1 (Course integer type designation)
-            this.type = 1;
-            this.courseDB = frameDB;
+            this.studentDB.setVisible(false);
+
             this.courseDB.addAddListener(new addListener());
             this.courseDB.addEditListener(new editListener());
             this.courseDB.addDeleteListener(new deleteListener());
             this.courseDB.addClearListener(new clearListener());
             this.courseDB.addSearchListener(new searchListener());
+            
+            this.courseDB.addStudentsListener(new studentsListener(this.studentDB, this.courseDB));
             
             //populate table data if course objects isn't empty, otherwise populate table with no rows
             if(modelDB.courseObjects.isEmpty() == false){
@@ -93,12 +74,72 @@ public class DatabaseController {
             else{
                 this.courseDB.generateTable(new String[0][0], 1);
             }
-            //enables student button in "main" when current window is closed
-            courseDB.addWindowListener(new WindowAdapter(){
-                public void windowClosing(WindowEvent e){
-                    main.courses.setEnabled(true);
+            
+            this.studentDB.addAddListener(new addListener());
+            this.studentDB.addEditListener(new editListener());
+            this.studentDB.addDeleteListener(new deleteListener());
+            this.studentDB.addClearListener(new clearListener());
+            this.studentDB.addSearchListener(new searchListener());
+            
+            this.studentDB.addCoursesListener(new coursesListener(this.studentDB, this.courseDB));
+            
+            //populate table data if student objects isn't empty, otherwise populate table with no rows
+            if(!(modelDB.studentObjects.isEmpty())){
+                this.modelDB.populateTable(0);
+                this.studentDB.generateTable(modelDB.tableData, 0);
+            }
+            else{
+                this.studentDB.generateTable(new String[0][0], 0);
+            }
+            
+            studentDB.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    courseDB.dispose();
                 }
             });
+            
+            courseDB.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    studentDB.dispose();
+                }
+            });
+    }
+    
+    public static void changeType(int newType){
+        type = newType;
+    }
+
+    private static class coursesListener implements ActionListener {
+        DatabaseFrame studentDB;
+        DatabaseFrame coursesDB;
+        public coursesListener(DatabaseFrame studentDB, DatabaseFrame coursesDB) {
+            this.studentDB = studentDB;
+            this.coursesDB = coursesDB;
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            coursesDB.setVisible(true);
+            studentDB.setVisible(false);
+            changeType(1);
+        }
+    }
+
+    private static class studentsListener implements ActionListener {
+        DatabaseFrame studentDB;
+        DatabaseFrame coursesDB;
+        
+        public studentsListener(DatabaseFrame studentDB, DatabaseFrame coursesDB) {
+            this.studentDB = studentDB;
+            this.coursesDB = coursesDB;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            studentDB.setVisible(true);
+            coursesDB.setVisible(false);
+            changeType(0);
         }
     }
     
@@ -119,10 +160,14 @@ public class DatabaseController {
                 if(actionType.equals("Add" )){
                     //check if name, id, and course is filled
                     if(input.getNameText().replace(" ", "").isEmpty() || input.getIdText().replace(" ", "").isEmpty()
-                             || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0]))== "None"){
+                             || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0]))== "None" || input.getID().replace(" ", "").isEmpty()){
                         JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
                     } //check for duplicates in name and id
+                    else if(!modelDB.validateID(input.getID())){
+                        JOptionPane.showMessageDialog( null, "Invalid ID.");
+                        return;
+                    }
                     else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText(), 0, "add")){
                         JOptionPane.showMessageDialog(null, "Student Name or ID Number already taken.");
                         return;
@@ -142,10 +187,14 @@ public class DatabaseController {
                 if(actionType.equals("Edit")){
                     //check if name, id, and course is filled
                     if(input.getNameText().replace(" ", "").isEmpty() || input.getIdText().replace(" ", "").isEmpty()
-                             || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])) == "None"){
+                             || input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])) == "None" || input.getID().replace(" ", "").isEmpty()){
                         JOptionPane.showMessageDialog( null, "Missing required fields.");
                         return;
                     } // check for duplicates for name and id
+                    else if(!modelDB.validateID(input.getID())){
+                        JOptionPane.showMessageDialog( null, "Invalid ID.");
+                        return;
+                    }
                     else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText(), 0, "edit")){
                         JOptionPane.showMessageDialog(null, "Student Name or ID Number already taken.");
                         return;

@@ -230,6 +230,23 @@ public class DatabaseModel {
         }
     }
     
+    public boolean validateID(String id){
+        String ID = id;
+        int intID;
+        if(ID.charAt(0)=='0'){
+            ID = ID.substring(1);
+        }
+        try {
+            intID=Integer.parseInt(ID);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        if(intID<0 || intID>10000){
+            return false;
+        }
+        return true;
+    }
+    
     /*Populating Table Data for Table Display*/
     public void populateTable(int type){
         if(type == 0){
