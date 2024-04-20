@@ -172,7 +172,7 @@ public class DatabaseController {
                         JOptionPane.showMessageDialog( null, "Invalid ID.");
                         return;
                     }
-                    else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText(), 0, "add")){
+                    else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText()+String.format("%04d", Integer.parseInt(input.getID())), 0, "add")){
                         JOptionPane.showMessageDialog(null, "Student Name or ID Number already taken.");
                         return;
                     }
@@ -203,7 +203,7 @@ public class DatabaseController {
                         JOptionPane.showMessageDialog( null, "Invalid ID.");
                         return;
                     }
-                    else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText(), 0, "edit")){
+                    else if(modelDB.checkDuplicate(selectedIndex, input.getNameText(),input.getIdText()+String.format("%04d", Integer.parseInt(input.getID())), 0, "edit")){
                         JOptionPane.showMessageDialog(null, "Student Name or ID Number already taken.");
                         return;
                     }
