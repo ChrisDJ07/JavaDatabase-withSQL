@@ -106,6 +106,9 @@ public class DatabaseController {
                     studentDB.dispose();
                 }
             });
+            
+            this.studentDB.setCount(modelDB.studentList.size());
+            this.courseDB.setCount(modelDB.courseCodeList.size());
     }
     
     public static void changeType(int newType){
@@ -177,14 +180,14 @@ public class DatabaseController {
                         return;
                     }
                     else{
-                        modelDB.createNewStudent(input.getNameText(), input.getGenderType(),input.getIdText(),
+                        modelDB.createNewStudent(input.getNameText(), input.getGenderType(),input.getIdText()+String.format("%04d", Integer.parseInt(input.getID())),
                                                  input.getYearText(), input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])));
                         //save new student data to database
                         modelDB.saveData(0);
                         //calls refresh function
                         refresh(); 
                         //stores new student data to string variable to add to table
-                        String[] newStudentData = {input.getNameText(), input.getGenderType(),input.getIdText(),
+                        String[] newStudentData = {input.getNameText(), input.getGenderType(),input.getIdText()+String.format("%04d", Integer.parseInt(input.getID())),
                                                    input.getYearText(), modelDB.getCourseName(modelDB.studentList.size()-1)};
                         //add new row for new student data
                         studentDB.tableModel.addRow(newStudentData); 
@@ -208,17 +211,19 @@ public class DatabaseController {
                         return;
                     }
                     else{
-                        String[] studentData = {input.getNameText(), input.getGenderType(),input.getIdText(),
+                        String[] studentData = {input.getNameText(), input.getGenderType(),input.getIdText()+String.format("%04d", Integer.parseInt(input.getID())),
                                                  input.getYearText(), input.getCourseCode(modelDB.courseCodeList.toArray(new String[0]))};
                         modelDB.setData(selectedIndex, studentData, 0);
                         modelDB.saveData(0);
                         refresh();
                         studentDB.tableModel.removeRow(selectedIndex);
+                        //System.out.println(selectedIndex+" - "+studentDB.tableModel.getRowCount());
                         studentData[4] = modelDB.getCourseName(selectedIndex);//replaces course code with code name to insert into the table
                         studentDB.tableModel.insertRow(selectedIndex,studentData);
                         input.dispose();
                     }
                 }
+                studentDB.setCount(modelDB.studentList.size());
             }
             if(type == 1){
                 if(actionType.equals("Add")){
@@ -289,6 +294,7 @@ public class DatabaseController {
                         input.dispose();
                     }
                 }
+                courseDB.setCount(modelDB.courseCodeList.size());
             }
         }
     }
@@ -328,6 +334,7 @@ public class DatabaseController {
                     input.setCourseText(currentData[4]);
                     selectStudent.dispose();
                 }
+                studentDB.setCount(modelDB.studentList.size());
             }
             /*Update student enrolled to deleted course*/
             if(type == 1){
@@ -351,6 +358,7 @@ public class DatabaseController {
                     input.setCourseNameField(currentData[1]);
                     selectCourse.dispose();
                 }
+                courseDB.setCount(modelDB.courseCodeList.size());
             }
         }
     }
@@ -431,6 +439,8 @@ public class DatabaseController {
                 }
                 courseDataChange();
             }
+            studentDB.setCount(modelDB.studentList.size());
+            courseDB.setCount(modelDB.studentList.size());
         }
     }
     class searchListener implements KeyListener{
