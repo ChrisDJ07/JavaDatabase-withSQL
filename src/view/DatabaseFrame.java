@@ -1,15 +1,20 @@
 
 package view;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.util.Comparator;
 import java.util.regex.Pattern;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,6 +23,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.RowFilter;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -53,6 +60,11 @@ public class DatabaseFrame extends JFrame{
     JTextField searchField;
     JLabel searchDescription;
     
+    JLabel count;
+    JLabel countLabel;
+    
+    Color background = new Color(193, 237, 245);
+    
     private static boolean changed; //toggles into true if there's a change in course data
     private static String[][] changedData; //stores the row information of the updated student data
     
@@ -65,9 +77,11 @@ public class DatabaseFrame extends JFrame{
         this.setSize(frameWidth+20,frameHeight-50);
         this.setLocationRelativeTo(this);
         
+        this.getContentPane().setBackground(background);
+        
     /*Adding main buttons*/
-        students = new JButton("STUDENTS");
-        courses = new JButton("COURSES");
+        students = createButton("STUDENTS");
+        courses = createButton("COURSES");
         this.add(students);
         this.add(courses);
         students.setBounds(380, 20, 100,30);
@@ -81,23 +95,38 @@ public class DatabaseFrame extends JFrame{
         this.add(titlePanel);
         titlePanel.setBounds(4,2, frameWidth-4, frameHeight/10);
         titlePanel.setLayout(null);
+        titlePanel.setBackground(background);
         
         //Title Labels
         if(type == 1){
             title = new JLabel("COURSE DATABASE");
             searchDescription = new JLabel("(Search Course ID or Name)");
             this.add(searchDescription);
+            searchDescription.setBounds(560,(frameHeight/10)+(frameHeight/2)+107-67, 350, 10);
             students.setEnabled(true);
+            
+            countLabel = new JLabel("COURSE COUNT");
+            this.add(countLabel);
         }
         if(type == 0){
             title = new JLabel("STUDENT DATABASE");
             searchDescription = new JLabel("(Search Student Name, Gender, ID, Year, Course Name)");
             this.add(searchDescription);
+            searchDescription.setBounds(485,(frameHeight/10)+(frameHeight/2)+107-67, 350, 10);
             courses.setEnabled(true);
+            
+            countLabel = new JLabel("STUDENT COUNT");
+            this.add(countLabel);
         }
+        countLabel.setBounds(120,(frameHeight/10)+(frameHeight/2)+109-20, 120, 20);
+        countLabel.setForeground(new Color(4, 108, 128));
+        searchDescription.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         
-        searchDescription.setBounds(468,(frameHeight/10)+(frameHeight/2)+107-65, 350, 10);
-        searchDescription.setFont(new Font("Arial", Font.PLAIN, 12));
+        count = new JLabel("0");
+        this.add(count);
+        count.setFont(new Font("Unispace", 1, 48)); 
+        count.setForeground(new Color(4, 108, 128));
+        count.setBounds(120,(frameHeight/10)+(frameHeight/2)+109-70, 150, 45);
         
         titlePanel.add(title);
         title.setFont(new java.awt.Font("Unispace", 1, 24));
@@ -108,19 +137,21 @@ public class DatabaseFrame extends JFrame{
         this.add(tablePanel);
         tablePanel.setBounds(4,(frameHeight/10)+4, frameWidth-4, (frameHeight/2)-2);
         tablePanel.setLayout(null);
-            tablePanel.setBorder(BorderFactory.createEtchedBorder());
+        tablePanel.setBackground(background);
+        tablePanel.setBorder(null);
         
     /*Button Panel*/
         buttonPanel = new JPanel();
         this.add(buttonPanel);
         buttonPanel.setLayout(null);
-        buttonPanel.setBounds(360,(frameHeight/2)+110, frameWidth/2, frameHeight/10);
+        buttonPanel.setBounds(380,(frameHeight/2)+110, frameWidth/2, frameHeight/10);
+        buttonPanel.setBackground(background);
         
     /*Adding buttons to the interface*/
-        editKey = new JButton("EDIT Field");
-        addKey = new JButton("ADD Field");
-        deleteKey = new JButton("DELETE Field");
-        clearKey = new JButton("CLEAR List");
+        editKey = createButton("EDIT");
+        addKey = createButton("ADD");
+        deleteKey = createButton("DELETE");
+        clearKey = createButton("CLEAR");
         buttonPanel.add(editKey);
         buttonPanel.add(addKey);
         buttonPanel.add(deleteKey);
@@ -137,8 +168,9 @@ public class DatabaseFrame extends JFrame{
         this.add(searchField);
         this.add(searchLabel);
         searchField.setBounds(480,(frameHeight/10)+(frameHeight/2)+107-100, frameWidth/4-4, frameHeight/20);
+        searchField.setBorder(null);
         searchLabel.setBounds(420,(frameHeight/10)+(frameHeight/2)+109-100, 70, 20);
-        searchLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        searchLabel.setFont(new Font("Segoe UI", Font.ITALIC, 14));
         
         /*
         Check every time the student (type = 0) frame is opened/(in focus) if course data is changed
@@ -202,10 +234,29 @@ public class DatabaseFrame extends JFrame{
         //add sorter
         table.setAutoCreateRowSorter(true);
         
+        //designing table
+        table.setFocusable(false);
+        table.setShowVerticalLines(false);
+        table.setGridColor(table.getBackground());
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        centerAlign(table);
+        
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+        table.getTableHeader().setOpaque(false);
+        table.getTableHeader().setBackground(new Color(15,132,158));
+        table.getTableHeader().setForeground(new Color(255,255,255));
+        table.getTableHeader().setBorder(null);
+        
+        if(type==0){
+            table.getColumnModel().getColumn(4).setPreferredWidth(300);
+        }
+        
         sorter = new TableRowSorter<>(tableModel);
         sorter.toggleSortOrder(0);
         table.setRowSorter(sorter);
-        tablePanel.add(new JScrollPane(table));
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.getVerticalScrollBar().setUI(new CustomScrollBarUI());
+        tablePanel.add(scrollPane);
         tablePanel.getComponent(0).setBounds(0,0, frameWidth-3, frameHeight/2); //default value for student data table
     }
     
@@ -246,5 +297,49 @@ public class DatabaseFrame extends JFrame{
     public void clearSearch(){
         searchField.setText("");
         addFilter();
+    }
+    public void setCount(int num){
+        count.setText(num+"");
+    }
+    
+    static class CustomScrollBarUI extends BasicScrollBarUI {
+        @Override
+        protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(Color.GRAY);
+            g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+            g2.dispose();
+        }
+        @Override
+        protected JButton createDecreaseButton(int orientation) {
+            return createButton();
+        }
+        @Override
+        protected JButton createIncreaseButton(int orientation) {
+            return createButton();
+        }
+        private JButton createButton() {
+            JButton button = new JButton();
+            button.setPreferredSize(new Dimension(0, 0));
+            return button;
+        }
+    }
+    private static JButton createButton(String text) {
+        JButton button = new JButton(text);
+        button.setBackground(new Color(5, 152, 179));
+        button.setBorder(null);
+        button.setBorderPainted(false);
+        button.setForeground(Color.white);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        button.setFocusable(false);
+        return button;
+    }
+    private static void centerAlign(JTable table) {
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        for (int columnIndex = 0; columnIndex < table.getColumnCount(); columnIndex++) {
+            table.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
     }
 }

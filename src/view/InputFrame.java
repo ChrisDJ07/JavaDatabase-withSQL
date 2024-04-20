@@ -181,7 +181,7 @@ public class InputFrame extends JFrame{
         return nameField.getText();
     }
     public String getIdText(){
-        return years[courseYears.getSelectedIndex()]+"-"+idField.getText();
+        return years[courseYears.getSelectedIndex()]+"-";
     }
     public String getID(){
         return idField.getText();

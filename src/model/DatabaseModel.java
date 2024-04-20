@@ -231,17 +231,13 @@ public class DatabaseModel {
     }
     
     public boolean validateID(String id){
-        String ID = id;
         int intID;
-        if(ID.charAt(0)=='0'){
-            ID = ID.substring(1);
-        }
         try {
-            intID=Integer.parseInt(ID);
+            intID=Integer.parseInt(id);
         } catch (NumberFormatException e) {
             return false;
         }
-        if(intID<0 || intID>10000){
+        if(intID<1 || intID>9999){
             return false;
         }
         return true;
