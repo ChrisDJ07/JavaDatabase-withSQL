@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 import model.DatabaseModel;
 import view.DatabaseFrame;
 import view.InputFrame;
-import view.SelectFrame;
 
 /**
  * Main controller for the database software.
@@ -23,8 +22,6 @@ public class DatabaseController {
     private DatabaseFrame courseDB; //course frame
     private static DatabaseModel modelDB; //general model object
     private InputFrame input; //general input frame
-    private SelectFrame selectStudent; //student select frame
-    private SelectFrame selectCourse; //course select frame
     
     //integer for GUI type, 0-students 1-courses
     private static int type;
@@ -299,70 +296,6 @@ public class DatabaseController {
         }
     }
     
-    /*SelectFrame ActionListener*/
-    class selectListener implements ActionListener{
-        String actionType;
-        
-        public selectListener(String actionType){
-            this.actionType = actionType;
-        }
-        
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int selectedIndex;
-            if(type == 0){
-                selectedIndex = selectStudent.getSelected(); //index of selected student
-                if(actionType.equals("Delete") && JOptionPane.showConfirmDialog(null, //dialog to confirm student deletion (skips deletion if false)
-                                "Are you sure you want to delete this student from the database? This operation is permanent.",
-                                "Student Delete alert", 2 )== JOptionPane.YES_OPTION){
-                    modelDB.delete(selectedIndex, 0); //delete student object from arraylist
-                    modelDB.saveData(0); //save data to database
-                    refresh(); //performs database refresh
-                    studentDB.tableModel.removeRow(selectedIndex); //update table
-                    selectStudent.dispose();
-                }
-                if(actionType.equals("Edit")){
-                    input = new InputFrame("Edit Student Data", 0); //init new edit inputFrame
-                    input.addSubmitListener(new submitListener("Edit", selectedIndex));
-                    input.setCourseCodeList(courseList);
-                    String[] currentData = modelDB.getData(selectedIndex, 0); //get data of selected student
-                    //set fields
-                    input.setNameText(currentData[0]);
-                    input.setIdText(currentData[1]);
-                    input.setYearText(currentData[2]);
-                    input.setGenderType(currentData[3]);
-                    input.setCourseText(currentData[4]);
-                    selectStudent.dispose();
-                }
-                studentDB.setCount(modelDB.studentList.size());
-            }
-            /*Update student enrolled to deleted course*/
-            if(type == 1){
-                selectedIndex = selectCourse.getSelected(); //index of selected course
-                if(actionType.equals("Delete") && 
-                        JOptionPane.showConfirmDialog(null, //dialog to confirm course deletion (skips deletion if false)
-                                "Deleting This Course will affect all Students enrolled in this course, proceed?",
-                                "Course Delete alert", 2 )== JOptionPane.YES_OPTION){
-                    modelDB.delete(selectedIndex, 1); //delete course object from arraylist
-                    modelDB.saveData(1); //save data to database
-                    courseDB.tableModel.removeRow(selectedIndex); //update table
-                    courseDataChange(); //update student data
-                    selectCourse.dispose();
-                }
-                if(actionType.equals("Edit")){
-                    input = new InputFrame("Edit Course Data", 1); //init new edit inputFrame
-                    input.addSubmitListener(new submitListener("Edit", selectedIndex));
-                    String[] currentData = modelDB.getData(selectedIndex, 1); //get data of selected course
-                    //set fields
-                    input.setCourseField(currentData[0]);
-                    input.setCourseNameField(currentData[1]);
-                    selectCourse.dispose();
-                }
-                courseDB.setCount(modelDB.courseCodeList.size());
-            }
-        }
-    }
-    
     /*DatabaseFrame ActionListeners*/
     class addListener implements ActionListener{
         @Override
@@ -384,16 +317,38 @@ public class DatabaseController {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(type == 0){
-                studentDB.clearSearch();
-                selectStudent = new SelectFrame("Select Student Data to Edit", 0);
-                selectStudent.addSelectListener(new selectListener("Edit"));
-                selectStudent.setList(modelDB.studentList.toArray(new String[0]));
+                if(studentDB.selected() == -1){
+                    JOptionPane.showMessageDialog( null, "No selected row.");
+                }
+                else{
+                    int selectedIndex = studentDB.getSelected();
+                    input = new InputFrame("Edit Student Data", 0); //init new edit inputFrame
+                    input.addSubmitListener(new submitListener("Edit", selectedIndex));
+                    input.setCourseCodeList(courseList);
+                    String[] currentData = modelDB.getData(selectedIndex, 0); //get data of selected student
+                    //set fields
+                    input.setNameText(currentData[0]);
+                    input.setIdText(currentData[1]);
+                    input.setYearText(currentData[2]);
+                    input.setGenderType(currentData[3]);
+                    input.setCourseText(currentData[4]);
+                }
+                studentDB.setCount(modelDB.studentList.size());
             }
             if(type == 1){
-                courseDB.clearSearch();
-                selectCourse = new SelectFrame("Select Course Data to Edit", 1);
-                selectCourse.addSelectListener(new selectListener("Edit"));
-                selectCourse.setList(courseList);
+                if(courseDB.selected() == -1){
+                    JOptionPane.showMessageDialog( null, "No selected row.");
+                }
+                else{
+                    int selectedIndex = courseDB.getSelected();
+                    input = new InputFrame("Edit Course Data", 1); //init new edit inputFrame
+                    input.addSubmitListener(new submitListener("Edit", selectedIndex));
+                    String[] currentData = modelDB.getData(selectedIndex, 1); //get data of selected course
+                    //set fields
+                    input.setCourseField(currentData[0]);
+                    input.setCourseNameField(currentData[1]);
+                }
+                courseDB.setCount(modelDB.courseCodeList.size());
             }
         }
     }
@@ -401,16 +356,38 @@ public class DatabaseController {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(type == 0){
-                studentDB.clearSearch();
-                selectStudent = new SelectFrame("Select Student Data to Delete",1);
-                selectStudent.addSelectListener(new selectListener("Delete"));
-                selectStudent.setList(modelDB.studentList.toArray(new String[0]));
+                if(studentDB.selected() == -1){
+                    JOptionPane.showMessageDialog( null, "No selected row.");
+                }
+                else{
+                    int selectedIndex = studentDB.getSelected();
+                    if(JOptionPane.showConfirmDialog(null, //dialog to confirm student deletion (skips deletion if false)
+                                    "Are you sure you want to delete this student from the database? This operation is permanent.",
+                                    "Student Delete alert", 2 )== JOptionPane.YES_OPTION){
+                        modelDB.delete(selectedIndex, 0); //delete student object from arraylist
+                        modelDB.saveData(0); //save data to database
+                        refresh(); //performs database refresh
+                        studentDB.tableModel.removeRow(selectedIndex); //update table
+                    }
+                }
+                studentDB.setCount(modelDB.studentList.size());
             }
             if(type == 1){
-                courseDB.clearSearch();
-                selectCourse = new SelectFrame("Select Course Data to Delete", 1);
-                selectCourse.addSelectListener(new selectListener("Delete"));
-                selectCourse.setList(modelDB.courseCodeList.toArray(new String[0]));
+                if(courseDB.selected() == -1){
+                    JOptionPane.showMessageDialog( null, "No selected row.");
+                }
+                else{
+                    int selectedIndex = courseDB.getSelected();
+                    if(JOptionPane.showConfirmDialog(null, //dialog to confirm course deletion (skips deletion if false)
+                                "Deleting This Course will affect all Students enrolled in this course, proceed?",
+                                "Course Delete alert", 2 )== JOptionPane.YES_OPTION){
+                    modelDB.delete(selectedIndex, 1); //delete course object from arraylist
+                    modelDB.saveData(1); //save data to database
+                    courseDB.tableModel.removeRow(selectedIndex); //update table
+                    courseDataChange(); //update student data
+                }
+                }
+                courseDB.setCount(modelDB.courseCodeList.size());
             }
         }
     }
@@ -427,6 +404,7 @@ public class DatabaseController {
                 for(int i=studentDB.tableModel.getRowCount()-1; i>=0; i--){
                     studentDB.tableModel.removeRow(i);
                 }
+                studentDB.setCount(modelDB.studentList.size());
             }
             if(type == 1 && JOptionPane.showConfirmDialog(null, //dialog to confirm course data deletion (skips deletion if false)
                                 "Are you sure you want to clear the whole course database? This operation cannot be undone.",
@@ -438,9 +416,8 @@ public class DatabaseController {
                     courseDB.tableModel.removeRow(i);
                 }
                 courseDataChange();
+                courseDB.setCount(modelDB.studentList.size());
             }
-            studentDB.setCount(modelDB.studentList.size());
-            courseDB.setCount(modelDB.studentList.size());
         }
     }
     class searchListener implements KeyListener{

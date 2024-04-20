@@ -281,6 +281,12 @@ public class DatabaseFrame extends JFrame{
         }
         return "cancel";
     }
+    public int selected(){
+        return table.getSelectedRow();
+    }
+    public int getSelected(){
+        return table.convertRowIndexToModel(table.getSelectedRow());
+    }
     //toggles the "changed" boolean variable to true/false
     public void setChangeStatus(boolean status){
         DatabaseFrame.changed = status;
