@@ -301,13 +301,11 @@ public class DatabaseController {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(type == 0){
-                studentDB.clearSearch();
                 input = new InputFrame("Add Student Data", 0);
                 input.addSubmitListener(new submitListener("Add", 0));
                 input.setCourseCodeList(courseList);
             }
             if(type == 1){
-                courseDB.clearSearch();
                 input = new InputFrame("Add Course", 1);
                 input.addSubmitListener(new submitListener("Add", 0));
             }
