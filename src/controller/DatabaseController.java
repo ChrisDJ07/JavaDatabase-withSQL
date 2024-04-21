@@ -272,21 +272,23 @@ public class DatabaseController {
                                 String choice = courseDB.codeChanged();
                                 //calls the codeChanged method confirming if student data should be changed or not, or cancel operation
                                 if(choice == "yes"){
-                                    modelDB.courseUpdate(modelDB.courseObjects.get(selectedIndex), courseData, "Students");//updates course codes of affected students    
+                                    modelDB.updateStudentCourse(modelDB.courseObjects.get(selectedIndex), courseData, previousData[0]);//updates course codes of affected students    
                                 }
                                 //check if not "yes" or "no"
                                 else if(choice == "cancel"){ 
                                     return;
                                 }
+                                else{
+                                    modelDB.setData(selectedIndex, courseData, 1); //updates course data
+                                    modelDB.courseUpdate( courseData, previousData[0]); //save to database
+                                    //refresh();
+                                    /*updates table*/
+                                    courseDB.tableModel.removeRow(selectedIndex);
+                                    courseDB.tableModel.insertRow(selectedIndex, courseData);
+                                    courseDataChange();//updates students' data
+                                }
 
                             }
-                            modelDB.setData(selectedIndex, courseData, 1); //updates course data
-                            modelDB.courseUpdate(modelDB.courseObjects.get(selectedIndex), courseData, "Courses"); //save to database
-                            
-                            /*updates table*/
-                            courseDB.tableModel.removeRow(selectedIndex);
-                            courseDB.tableModel.insertRow(selectedIndex, courseData);
-                            courseDataChange();//updates students' data
                         }
                         input.dispose();
                     }

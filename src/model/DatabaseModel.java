@@ -330,10 +330,9 @@ public class DatabaseModel {
     }
     
     /*Updates Students' course code based on course changes*/
-    public void courseUpdate(Courses OLD, String[] NEW, String type){
+    public void updateStudentCourse(Courses oldCourse, String[] NEW, String OLD){
         try{
-            if(type.equals("Students")){
-                for(int index: OLD.studentList){
+                for(int index: oldCourse.studentList){
                     studentObjects.get(index).setCourseCode(NEW[0]);
                 }
                 Class.forName("com.mysql.cj.jdbc.Driver");
@@ -346,26 +345,31 @@ public class DatabaseModel {
                                 where course = "%s";
                                 """;
                 statement.executeUpdate(
-                String.format(message, NEW[0], OLD.getCourseCode())
+                String.format(message, NEW[0], OLD)
                 );
-                System.out.println(String.format(message, NEW, OLD.getCourseCode()));
-            }
-            else if(type.equals("Courses")){
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                Connection connection = DriverManager.getConnection(url, username, password);
-                Statement statement = connection.createStatement();
+                System.out.println(String.format(message, NEW, OLD));
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void courseUpdate(String[] NEW, String OLD){
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, username, password);
+            Statement statement = connection.createStatement();
 
-                String message ="""
-                                update courses  
-                                set course_id = "%s",
-                                    course_name = "%s"
-                                where course_id = "%s";
-                                """;
-                statement.executeUpdate(
-                String.format(message, NEW[0], NEW[1], OLD.getCourseCode())
-                );
-                System.out.println(String.format(message, NEW[0], NEW[1], OLD.getCourseCode()));
-            }
+            String message ="""
+                            update courses  
+                            set course_id = "%s",
+                                course_name = "%s"
+                            where course_id = "%s";
+                            """;
+            statement.executeUpdate(
+            String.format(message, NEW[0], NEW[1], OLD)
+            );
+            System.out.println(String.format(message, NEW[0], NEW[1], OLD));
+            System.out.println(OLD);
         }catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
