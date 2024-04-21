@@ -21,6 +21,10 @@ public class DatabaseModel {
      public static ArrayList<Courses> courseObjects = new ArrayList<>();  //List of Course Objects for OOP
      
      public String[][] tableData;   //2d string for Table Construction
+     
+     String url = "jdbc:mysql://127.0.0.1:3306/school";
+     String username = "root";
+     String password = "!DFoYtT7FHFez@rM";
     
     /*Class Constructor, init file objects with student and course data files*/
     public DatabaseModel(){
@@ -28,42 +32,69 @@ public class DatabaseModel {
     }
     
     /*Save Students/Courses Data into dedicated files*/
-    public void saveData(int type){
-        String url = "jdbc:mysql://127.0.0.1:3306/school";
-        String username = "root";
-        String password = "!DFoYtT7FHFez@rM";
+    public void saveData(int type, String[] data){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(url, username, password);
             Statement statement = connection.createStatement();
             
             if(type == 0){
-                statement.executeUpdate("delete from students");
-                for(Students student: studentObjects){
-                    statement.executeUpdate("insert into students values("
-                            +"\""+student.getName()+"\","
-                            +"\""+student.getGender()+"\","
-                            +"\""+student.getId()+"\","
-                            +"\""+student.getYear()+"\","
-                            +"\""+student.getCourseCode()+"\""
+                    statement.executeUpdate("insert into students (student_name, gender, student_id, year_level, course) values("
+                            +"\""+data[0]+"\","
+                            +"\""+data[1]+"\","
+                            +"\""+data[2]+"\","
+                            +"\""+data[3]+"\","
+                            +"\""+data[4]+"\""
                             +");"
                     
                     );
-                }
             }
             if(type == 1){
-                statement.executeUpdate("delete from courses");
-                for(Courses course: courseObjects){
-                    statement.executeUpdate("insert into courses values("
-                            +"\""+course.getCourseCode()+"\","
-                            +"\""+course.getCourseName()+"\""
+                    statement.executeUpdate("insert into courses (course_id, course_name) values("
+                            +"\""+data[0]+"\","
+                            +"\""+data[1]+"\""
                             +");"
                     
                     );
                 }
-            }
 
         } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /*Save Students/Courses Data into dedicated files*/
+    public void updateData(int type, String[] data, String oldName){
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, username, password);
+            Statement statement = connection.createStatement();
+            
+            if(type == 0){
+                    String message = """
+                                     update students
+                                     set student_name = "%s",
+                                     	gender = "%s",
+                                         student_id = "%s",
+                                         year_level = %d,
+                                         course = "%s"
+                                     where student_name = "%s"
+                                     ;
+                                     """;
+                    statement.executeUpdate(String.format(message, data[0],data[1],data[2],Integer.parseInt(data[3]),data[4], oldName));
+                    System.out.println(String.format(message, data[0],data[1],data[2],Integer.parseInt(data[3]),data[4], oldName));
+            }
+            if(type == 1){
+                    statement.executeUpdate("insert into courses (course_id, course_name) values("
+                            +"\""+data[0]+"\","
+                            +"\""+data[1]+"\""
+                            +");"
+                    
+                    );
+                }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
         }
     }
     
@@ -77,7 +108,7 @@ public class DatabaseModel {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 Connection connection = DriverManager.getConnection(url, username, password);
                 Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("select * from students");
+                ResultSet result = statement.executeQuery("select student_name, gender, student_id, year_level, course from students order by add_stamp, student_name");
 
                 while (result.next()) {
                     String[] studentData = new String[5];
@@ -92,7 +123,7 @@ public class DatabaseModel {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 Connection connection = DriverManager.getConnection(url, username, password);
                 Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("select * from courses");
+                ResultSet result = statement.executeQuery("select course_id, course_name from courses order by add_stamp, course_id");
 
                 while (result.next()) {
                     String[] courseData = new String[2];
@@ -105,6 +136,7 @@ public class DatabaseModel {
             }
 
         } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
         }
     }
     
@@ -160,14 +192,46 @@ public class DatabaseModel {
     }
     
     /*Remove each instance of specified student/course object and data*/
-    public void delete(int index, int type){
-        if(type == 0){
-            studentObjects.remove(index);
-            studentList.remove(index);
-        }
-        if(type == 1){
-            courseObjects.remove(index);
-            courseCodeList.remove(index);
+    public void delete(int indexF, int type){
+        int index = indexF-1;//lmao this solves the bug WTF!!!! I don't know why :))))
+        try{
+            if(type == 0){
+                studentObjects.remove(index);
+                studentList.remove(index); System.out.println(studentList.size()+" - index = "+index);
+                
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement();
+
+                String message ="""
+                                delete from students
+                                where student_name = "%s";
+                                """;
+                statement.executeUpdate(
+                String.format(message, studentList.get(index))
+                );
+                System.out.println("Hello");
+                System.out.println(String.format(message, studentList.get(index)));
+            }
+            if(type == 1){
+                courseObjects.remove(index);
+                courseCodeList.remove(index);
+                
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement();
+
+                String message ="""
+                                delete from courses
+                                where course_id = "%s";
+                                """;
+                statement.executeUpdate(
+                String.format(message, courseCodeList.get(index))
+                );
+                System.out.println(String.format(message, courseCodeList.get(index)));
+            }
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
         }
     }
     
@@ -266,9 +330,77 @@ public class DatabaseModel {
     }
     
     /*Updates Students' course code based on course changes*/
-    public void courseUpdate(Courses OLD, String[] NEW){
-        for(int index: OLD.studentList){
-            studentObjects.get(index).setCourseCode(NEW[0]);
+    public void courseUpdate(Courses OLD, String[] NEW, String type){
+        try{
+            if(type.equals("Students")){
+                for(int index: OLD.studentList){
+                    studentObjects.get(index).setCourseCode(NEW[0]);
+                }
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement();
+
+                String message ="""
+                                update students
+                                set course = "%s"
+                                where course = "%s";
+                                """;
+                statement.executeUpdate(
+                String.format(message, NEW[0], OLD.getCourseCode())
+                );
+                System.out.println(String.format(message, NEW, OLD.getCourseCode()));
+            }
+            else if(type.equals("Courses")){
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement();
+
+                String message ="""
+                                update courses  
+                                set course_id = "%s"
+                                set course_name = "%s"
+                                where course_id = "%s";
+                                """;
+                statement.executeUpdate(
+                String.format(message, NEW[0], NEW[1], OLD.getCourseCode())
+                );
+            }
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /*Clears the student/course database*/
+    public void clearDatabase(int type){
+        try{
+            if(type == 0){
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement();
+
+                String message ="""
+                                delete from students;
+                                """;
+                statement.executeUpdate(
+                message
+                );
+                System.out.println(message);
+            }
+            if(type == 1){
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement();
+
+                String message ="""
+                                delete from courses;
+                                """;
+                statement.executeUpdate(
+                message
+                );
+                System.out.println(message);
+            }
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
         }
     }
 }

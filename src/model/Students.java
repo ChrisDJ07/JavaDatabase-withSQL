@@ -17,7 +17,7 @@ public class Students {
     //String field to store name of the enrolled course
     //useful for keeping track of the course name after authenticating with courses objects
     //should I remove this?? DOES THIS DEFEAT THE PURPOSE???
-    private String courseName = "Not enrolled"; //default value "not enrolled" when no code match is detected
+    private String courseName = "Not enrolled :/"; //default value "not enrolled" when no code match is detected
     
     //contructor for Students class, initializes values for name, gender, id, year level, and course code
     public Students(String name, String gender, String id, String yearLevel, String courseCode){

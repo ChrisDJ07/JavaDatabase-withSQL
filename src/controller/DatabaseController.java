@@ -179,15 +179,16 @@ public class DatabaseController {
                     else{
                         modelDB.createNewStudent(input.getNameText(), input.getGenderType(),input.getIdText()+String.format("%04d", Integer.parseInt(input.getID())),
                                                  input.getYearText(), input.getCourseCode(modelDB.courseCodeList.toArray(new String[0])));
-                        //save new student data to database
-                        modelDB.saveData(0);
-                        //calls refresh function
-                        refresh(); 
                         //stores new student data to string variable to add to table
                         String[] newStudentData = {input.getNameText(), input.getGenderType(),input.getIdText()+String.format("%04d", Integer.parseInt(input.getID())),
+                                                   input.getYearText(), input.getCourseCode(modelDB.courseCodeList.toArray(new String[0]))};
+                        //save new student data to database
+                        modelDB.saveData(0, newStudentData);
+                        refresh();
+                        String[] rowStudentData = {input.getNameText(), input.getGenderType(),input.getIdText()+String.format("%04d", Integer.parseInt(input.getID())),
                                                    input.getYearText(), modelDB.getCourseName(modelDB.studentList.size()-1)};
                         //add new row for new student data
-                        studentDB.tableModel.addRow(newStudentData); 
+                        studentDB.tableModel.addRow(rowStudentData); 
                         input.dispose();
                     }
                 }
@@ -210,10 +211,11 @@ public class DatabaseController {
                     else{
                         String[] studentData = {input.getNameText(), input.getGenderType(),input.getIdText()+String.format("%04d", Integer.parseInt(input.getID())),
                                                  input.getYearText(), input.getCourseCode(modelDB.courseCodeList.toArray(new String[0]))};
+                        //save student data to database
+                        modelDB.updateData(0, studentData, modelDB.studentList.get(selectedIndex));
                         modelDB.setData(selectedIndex, studentData, 0);
-                        modelDB.saveData(0);
-                        refresh();
                         studentDB.tableModel.removeRow(selectedIndex);
+                        refresh();
                         //System.out.println(selectedIndex+" - "+studentDB.tableModel.getRowCount());
                         studentData[4] = modelDB.getCourseName(selectedIndex);//replaces course code with code name to insert into the table
                         studentDB.tableModel.insertRow(selectedIndex,studentData);
@@ -235,10 +237,10 @@ public class DatabaseController {
                     }
                     else{
                         modelDB.createNewCourse(input.getCourseField(), input.getCourseNameField());
-                        //save new course data to database
-                        modelDB.saveData(1);
                         //stores new student data to string variable to add to table
                         String[] newCourseData = {input.getCourseField(), input.getCourseNameField()};
+                        //save new course data to database
+                        modelDB.saveData(1, newCourseData);
                         //add new row for new course data
                         courseDB.tableModel.addRow(newCourseData);
                         courseDataChange();
@@ -270,9 +272,7 @@ public class DatabaseController {
                                 String choice = courseDB.codeChanged();
                                 //calls the codeChanged method confirming if student data should be changed or not, or cancel operation
                                 if(choice == "yes"){
-                                    modelDB.courseUpdate(modelDB.courseObjects.get(selectedIndex), courseData);//updates course codes of affected students
-                                    //save data to database
-                                    modelDB.saveData(0);     
+                                    modelDB.courseUpdate(modelDB.courseObjects.get(selectedIndex), courseData, "Students");//updates course codes of affected students    
                                 }
                                 //check if not "yes" or "no"
                                 else if(choice == "cancel"){ 
@@ -281,7 +281,7 @@ public class DatabaseController {
 
                             }
                             modelDB.setData(selectedIndex, courseData, 1); //updates course data
-                            modelDB.saveData(1); //save to database
+                            modelDB.courseUpdate(modelDB.courseObjects.get(selectedIndex), courseData, "Courses"); //save to database
                             
                             /*updates table*/
                             courseDB.tableModel.removeRow(selectedIndex);
@@ -365,9 +365,8 @@ public class DatabaseController {
                                     "Are you sure you want to delete this student from the database? This operation is permanent.",
                                     "Student Delete alert", 2 )== JOptionPane.YES_OPTION){
                         modelDB.delete(selectedIndex, 0); //delete student object from arraylist
-                        modelDB.saveData(0); //save data to database
-                        refresh(); //performs database refresh
                         studentDB.tableModel.removeRow(selectedIndex); //update table
+                        refresh();
                     }
                 }
                 studentDB.setCount(modelDB.studentList.size());
@@ -382,9 +381,9 @@ public class DatabaseController {
                                 "Deleting This Course will affect all Students enrolled in this course, proceed?",
                                 "Course Delete alert", 2 )== JOptionPane.YES_OPTION){
                     modelDB.delete(selectedIndex, 1); //delete course object from arraylist
-                    modelDB.saveData(1); //save data to database
                     courseDB.tableModel.removeRow(selectedIndex); //update table
                     courseDataChange(); //update student data
+                    //refresh();
                 }
                 }
                 courseDB.setCount(modelDB.courseCodeList.size());
@@ -399,7 +398,7 @@ public class DatabaseController {
                                 "Student DB Delete alert", 2 )== JOptionPane.YES_OPTION){
                 studentDB.clearSearch();
                 modelDB.studentObjects.clear();
-                modelDB.saveData(0);
+                modelDB.clearDatabase(0);
                 refresh();
                 for(int i=studentDB.tableModel.getRowCount()-1; i>=0; i--){
                     studentDB.tableModel.removeRow(i);
@@ -411,12 +410,12 @@ public class DatabaseController {
                                 "Course DB Delete alert", 2 )== JOptionPane.YES_OPTION){
                 courseDB.clearSearch();
                 modelDB.courseObjects.clear();
-                modelDB.saveData(1);
+                modelDB.clearDatabase(1);
                 for(int i=courseDB.tableModel.getRowCount()-1; i>=0; i--){
                     courseDB.tableModel.removeRow(i);
                 }
                 courseDataChange();
-                courseDB.setCount(modelDB.studentList.size());
+                courseDB.setCount(modelDB.courseCodeList.size());
             }
         }
     }
