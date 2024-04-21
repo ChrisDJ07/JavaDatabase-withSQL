@@ -273,6 +273,12 @@ public class DatabaseController {
                                 //calls the codeChanged method confirming if student data should be changed or not, or cancel operation
                                 if(choice == "yes"){
                                     modelDB.updateStudentCourse(modelDB.courseObjects.get(selectedIndex), courseData, previousData[0]);//updates course codes of affected students    
+                                    modelDB.setData(selectedIndex, courseData, 1); //updates course data
+                                    modelDB.courseUpdate( courseData, previousData[0]); //save to database
+                                    /*updates table*/
+                                    courseDB.tableModel.removeRow(selectedIndex);
+                                    courseDB.tableModel.insertRow(selectedIndex, courseData);
+                                    courseDataChange();//updates students' data
                                 }
                                 //check if not "yes" or "no"
                                 else if(choice == "cancel"){ 
