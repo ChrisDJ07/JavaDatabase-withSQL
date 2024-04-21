@@ -357,13 +357,14 @@ public class DatabaseModel {
 
                 String message ="""
                                 update courses  
-                                set course_id = "%s"
-                                set course_name = "%s"
+                                set course_id = "%s",
+                                    course_name = "%s"
                                 where course_id = "%s";
                                 """;
                 statement.executeUpdate(
                 String.format(message, NEW[0], NEW[1], OLD.getCourseCode())
                 );
+                System.out.println(String.format(message, NEW[0], NEW[1], OLD.getCourseCode()));
             }
         }catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
