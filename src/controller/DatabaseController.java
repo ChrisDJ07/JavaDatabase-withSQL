@@ -104,8 +104,8 @@ public class DatabaseController {
                 }
             });
             
-            this.studentDB.setCount(modelDB.studentList.size());
-            this.courseDB.setCount(modelDB.courseCodeList.size());
+            this.studentDB.setCount(modelDB.getCount(0));
+            this.courseDB.setCount(modelDB.getCount(1));
     }
     
     public static void changeType(int newType){
@@ -222,7 +222,7 @@ public class DatabaseController {
                         input.dispose();
                     }
                 }
-                studentDB.setCount(modelDB.studentList.size());
+                studentDB.setCount(modelDB.getCount(0));
             }
             if(type == 1){
                 if(actionType.equals("Add")){
@@ -272,34 +272,26 @@ public class DatabaseController {
                                 String choice = courseDB.codeChanged();
                                 //calls the codeChanged method confirming if student data should be changed or not, or cancel operation
                                 if(choice == "yes"){
-                                    modelDB.updateStudentCourse(modelDB.courseObjects.get(selectedIndex), courseData, previousData[0]);//updates course codes of affected students    
-                                    modelDB.setData(selectedIndex, courseData, 1); //updates course data
-                                    modelDB.courseUpdate( courseData, previousData[0]); //save to database
-                                    /*updates table*/
-                                    courseDB.tableModel.removeRow(selectedIndex);
-                                    courseDB.tableModel.insertRow(selectedIndex, courseData);
-                                    courseDataChange();//updates students' data
+                                    //updates course codes of affected students
+                                    modelDB.updateStudentCourse(modelDB.courseObjects.get(selectedIndex), courseData, previousData[0]);    
                                 }
                                 //check if not "yes" or "no"
                                 else if(choice == "cancel"){ 
                                     return;
                                 }
-                                else{
-                                    modelDB.setData(selectedIndex, courseData, 1); //updates course data
-                                    modelDB.courseUpdate( courseData, previousData[0]); //save to database
-                                    //refresh();
-                                    /*updates table*/
-                                    courseDB.tableModel.removeRow(selectedIndex);
-                                    courseDB.tableModel.insertRow(selectedIndex, courseData);
-                                    courseDataChange();//updates students' data
-                                }
-
                             }
+                            //modelDB.updateStudentCourse(modelDB.courseObjects.get(selectedIndex), courseData, previousData[0]);
+                            modelDB.setData(selectedIndex, courseData, 1); //updates course data
+                            modelDB.courseUpdate( courseData, previousData[0]); //save to database
+                            /*updates table*/
+                            courseDB.tableModel.removeRow(selectedIndex);
+                            courseDB.tableModel.insertRow(selectedIndex, courseData);
+                            courseDataChange();//updates students' data
                         }
                         input.dispose();
                     }
                 }
-                courseDB.setCount(modelDB.courseCodeList.size());
+                courseDB.setCount(modelDB.getCount(1));
             }
         }
     }
@@ -341,7 +333,7 @@ public class DatabaseController {
                     input.setGenderType(currentData[3]);
                     input.setCourseText(currentData[4]);
                 }
-                studentDB.setCount(modelDB.studentList.size());
+                studentDB.setCount(modelDB.getCount(0));
             }
             if(type == 1){
                 if(courseDB.selected() == -1){
@@ -356,7 +348,7 @@ public class DatabaseController {
                     input.setCourseField(currentData[0]);
                     input.setCourseNameField(currentData[1]);
                 }
-                courseDB.setCount(modelDB.courseCodeList.size());
+                courseDB.setCount(modelDB.getCount(1));
             }
         }
     }
@@ -377,7 +369,7 @@ public class DatabaseController {
                         refresh();
                     }
                 }
-                studentDB.setCount(modelDB.studentList.size());
+                studentDB.setCount(modelDB.getCount(0));
             }
             if(type == 1){
                 if(courseDB.selected() == -1){
@@ -394,7 +386,7 @@ public class DatabaseController {
                     //refresh();
                 }
                 }
-                courseDB.setCount(modelDB.courseCodeList.size());
+                courseDB.setCount(modelDB.getCount(1));
             }
         }
     }
@@ -411,7 +403,7 @@ public class DatabaseController {
                 for(int i=studentDB.tableModel.getRowCount()-1; i>=0; i--){
                     studentDB.tableModel.removeRow(i);
                 }
-                studentDB.setCount(modelDB.studentList.size());
+                studentDB.setCount(modelDB.getCount(0));
             }
             if(type == 1 && JOptionPane.showConfirmDialog(null, //dialog to confirm course data deletion (skips deletion if false)
                                 "Are you sure you want to clear the whole course database? This operation cannot be undone.",
@@ -423,7 +415,7 @@ public class DatabaseController {
                     courseDB.tableModel.removeRow(i);
                 }
                 courseDataChange();
-                courseDB.setCount(modelDB.courseCodeList.size());
+                courseDB.setCount(modelDB.getCount(1));
             }
         }
     }

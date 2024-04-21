@@ -375,6 +375,44 @@ public class DatabaseModel {
         }
     }
     
+    public int getCount (int type){
+        try{
+            if(type == 0){
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement();
+
+                String message ="""
+                                select count(student_id) AS column_count from students;
+                                """;
+                System.out.println(message);
+                ResultSet resultSet = statement.executeQuery(message);
+                if (resultSet.next()) {
+                    // Retrieve the count of the column
+                    return resultSet.getInt("column_count");
+                }
+            }
+            if(type == 1){
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement();
+
+                String message ="""
+                                select count(course_id) AS column_count from courses;
+                                """;
+                System.out.println(message);
+                ResultSet resultSet = statement.executeQuery(message);
+                if (resultSet.next()) {
+                    // Retrieve the count of the column
+                    return resultSet.getInt("column_count");
+                }
+            }
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
     /*Clears the student/course database*/
     public void clearDatabase(int type){
         try{
